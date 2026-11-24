@@ -1,0 +1,25 @@
+{
+    "name": "rkr/ai-watermark-removal-tools",
+    "description": "Clean invisible Unicode watermark characters from UTF-8 text while preserving emoji and script shaping.",
+    "type": "library",
+    "license": "MIT",
+    "keywords": [
+        "unicode",
+        "watermark",
+        "text"
+    ],
+    "require": {
+        "php": ">=8.2",
+        "ext-json": "*",
+        "ext-pcre": "*",
+        "lib-pcre": ">=10.40"
+    },
+    "autoload": {
+        "psr-4": {
+            "Rkr\\WatermarkRemoval\\": "src/"
+        }
+    },
+    "scripts": {
+        "test": "@php tests/text.php"
+    }
+}
