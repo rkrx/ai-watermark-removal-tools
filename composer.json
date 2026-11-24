@@ -1,12 +1,14 @@
 {
     "name": "rkr/ai-watermark-removal-tools",
-    "description": "Clean invisible Unicode watermark characters from UTF-8 text while preserving emoji and script shaping.",
+    "description": "Clean invisible Unicode marks in text and remove embedded C2PA provenance metadata from images without re-encoding pixels.",
     "type": "library",
     "license": "MIT",
     "keywords": [
         "unicode",
         "watermark",
-        "text"
+        "text",
+        "c2pa",
+        "image-metadata"
     ],
     "require": {
         "php": ">=8.2",
@@ -20,6 +22,9 @@
         }
     },
     "scripts": {
-        "test": "@php tests/text.php"
+        "test": [
+            "@php tests/text.php",
+            "@php tests/images.php"
+        ]
     }
 }

@@ -1,13 +1,13 @@
 # AI Watermark Removal Tools
 
-A PHP library for removing invisible Unicode markers from UTF-8 text. The cleaner preserves tabs, line breaks and combining accents. It uses surrounding characters to preserve emoji sequences, script shaping, ideographic variants and script-specific word breaks.
+A PHP library for cleaning UTF-8 text and removing embedded C2PA manifests from images. The cleaner preserves tabs, line breaks and combining accents. It uses surrounding characters to preserve emoji sequences, script shaping, ideographic variants and script-specific word breaks.
 
 ## Installation
 
 Requires PHP 8.2 or later with PCRE2 10.40 or later (included in standard PHP 8.2 builds).
 
 ```sh
-composer require rkr/ai-watermark-removal-tools:^1.0
+composer require rkr/ai-watermark-removal-tools:^1.1
 ```
 
 ## Clean text
@@ -30,7 +30,24 @@ The cleaner removes embedded byte-order marks, soft hyphens, Unicode noncharacte
 - `TextCleaner::values($value)` cleans nested JSON string values, preserves property names and returns new arrays and objects. Use it for application data where all string values may be edited.
 - `TextCleaner::schema($schema)` cleans titles and descriptions in JSON Schema arrays and standard objects. Property names, patterns, enum values and defaults retain their exact values.
 
-Supply valid UTF-8. Invalid input raises `JsonException`. The text API handles character-based marks. Statistical watermarks encoded in word choice and image data are outside the scope of this release.
+Supply valid UTF-8. Invalid input raises `JsonException`. The text API handles character-based marks. Statistical watermarks encoded in word choice are outside the scope of the text API.
+
+## Clean embedded image provenance
+
+```php
+use Rkr\WatermarkRemoval\ImageMetadataCleaner;
+
+$original = file_get_contents('input.jpg');
+if ($original === false) {
+    throw new RuntimeException('Could not read the image');
+}
+$clean = ImageMetadataCleaner::clean($original);
+file_put_contents('output.jpg', $clean);
+```
+
+`clean()` accepts image bytes and returns image bytes. It recognizes PNG `caBX`, WebP `C2PA` and ordinary JPEG APP11 JUMBF manifest stores, including sequential fragments. It copies the encoded image data, ICC profiles, EXIF orientation and unrelated metadata byte for byte. A clean supported image is returned unchanged. The file API belongs to the caller.
+
+This operation removes the embedded manifest and its verifiable signature from the output. XMP links to remote manifests, other EXIF/IPTC/XMP fields, generator annotations, visible overlays and pixel-encoded marks remain outside its scope. Unsupported formats raise `InvalidArgumentException`. Truncated containers or ambiguous JPEG fragments raise `UnexpectedValueException`. JPEGs with appended data such as a second image are rejected when removing a manifest could invalidate offsets.
 
 ## Development
 
